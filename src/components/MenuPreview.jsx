@@ -101,22 +101,24 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
                           alignItems: 'baseline',
                           gap: 8,
                         }}>
-                          <span style={{
+                          <div style={{
+                            flex: 1,
                             fontFamily: bodyFont,
                             fontSize: `${itemNameSize}px`,
                             fontWeight: 700,
                             color: theme.text,
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
-                          }}>{item.name}</span>
+                            wordBreak: 'break-word',
+                          }}>{item.name}</div>
                           {item.price && (
-                            <span style={{
+                            <div style={{
                               fontFamily: bodyFont,
                               fontSize: `${priceSize}px`,
                               fontWeight: 700,
                               color: theme.accent,
                               whiteSpace: 'nowrap',
-                            }}>{item.price}</span>
+                            }}>{item.price}</div>
                           )}
                         </div>
                         {item.description && (
