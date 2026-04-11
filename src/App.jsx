@@ -8,33 +8,33 @@ const initialSections = [
   {
     name: 'Breakfast',
     items: [
-      { name: 'Homemade Granola', description: 'Oats, honey, almonds, fresh berries', price: '$6.50', image: '' },
-      { name: 'Fresh Fruit Cocktail', description: 'Seasonal fruits with mint', price: '$5.00', image: '' },
-      { name: 'Eggs, Toast & Fruit', description: 'Two eggs any style, artisan toast', price: '$8.25', image: '' },
+      { name: 'Homemade Granola', description: 'Oats, honey, almonds, fresh berries', price: '$6.50', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Fresh Fruit Cocktail', description: 'Seasonal fruits with mint', price: '$5.00', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Eggs, Toast & Fruit', description: 'Two eggs any style, artisan toast', price: '$8.25', image: '', imageSize: 48, imageX: 0, imageY: 0 },
     ],
   },
   {
     name: 'Lunch',
     items: [
-      { name: 'Soup & Grilled Cheese', description: 'Tomato bisque, aged cheddar', price: '$9.50', image: '' },
-      { name: 'Chicken Quesadilla', description: 'Grilled chicken, peppers, salsa', price: '$11.00', image: '' },
-      { name: 'Stuffed Potato', description: 'Bacon, sour cream, chives', price: '$8.75', image: '' },
+      { name: 'Soup & Grilled Cheese', description: 'Tomato bisque, aged cheddar', price: '$9.50', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Chicken Quesadilla', description: 'Grilled chicken, peppers, salsa', price: '$11.00', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Stuffed Potato', description: 'Bacon, sour cream, chives', price: '$8.75', image: '', imageSize: 48, imageX: 0, imageY: 0 },
     ],
   },
   {
     name: 'Dinner',
     items: [
-      { name: 'Chicken Steak', description: 'Herb-marinated, garlic butter', price: '$15.00', image: '' },
-      { name: 'Beef Steak', description: '8oz sirloin, peppercorn sauce', price: '$18.50', image: '' },
-      { name: 'Baked Chicken', description: 'Lemon thyme, roasted vegetables', price: '$14.00', image: '' },
+      { name: 'Chicken Steak', description: 'Herb-marinated, garlic butter', price: '$15.00', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Beef Steak', description: '8oz sirloin, peppercorn sauce', price: '$18.50', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Baked Chicken', description: 'Lemon thyme, roasted vegetables', price: '$14.00', image: '', imageSize: 48, imageX: 0, imageY: 0 },
     ],
   },
   {
     name: 'Drinks',
     items: [
-      { name: 'Green Tea', description: 'Organic loose leaf', price: '$2.50', image: '' },
-      { name: 'Hot Chocolate', description: 'Belgian cocoa, whipped cream', price: '$3.75', image: '' },
-      { name: 'Lemon Water', description: 'Fresh squeezed', price: '$1.50', image: '' },
+      { name: 'Green Tea', description: 'Organic loose leaf', price: '$2.50', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Hot Chocolate', description: 'Belgian cocoa, whipped cream', price: '$3.75', image: '', imageSize: 48, imageX: 0, imageY: 0 },
+      { name: 'Lemon Water', description: 'Fresh squeezed', price: '$1.50', image: '', imageSize: 48, imageX: 0, imageY: 0 },
     ],
   },
 ];
@@ -84,7 +84,7 @@ export default function App() {
   };
 
   // Section operations
-  const addSection = () => setSections([...sections, { name: 'New Section', items: [{ name: 'New Item', description: '', price: '$0.00', image: '' }] }]);
+  const addSection = () => setSections([...sections, { name: 'New Section', items: [{ name: 'New Item', description: '', price: '$0.00', image: '', imageSize: 48, imageX: 0, imageY: 0 }] }]);
   const deleteSection = (i) => setSections(sections.filter((_, idx) => idx !== i));
   const moveSection = (i, direction) => {
     const newSections = [...sections];
@@ -100,7 +100,7 @@ export default function App() {
   };
   const addItem = (si) => {
     const copy = [...sections];
-    copy[si] = { ...copy[si], items: [...copy[si].items, { name: 'New Item', description: '', price: '$0.00', image: '' }] };
+    copy[si] = { ...copy[si], items: [...copy[si].items, { name: 'New Item', description: '', price: '$0.00', image: '', imageSize: 48, imageX: 0, imageY: 0 }] };
     setSections(copy);
   };
   const deleteItem = (si, ii) => {
@@ -240,13 +240,43 @@ export default function App() {
                           onChange={e => updateItem(si, ii, 'description', e.target.value)}
                         />
                         {showImages && (
-                          <div className="img-row">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={e => handleImageUpload(si, ii, e.target.files[0])}
-                            />
-                            {item.image && <img src={item.image} alt="" className="img-thumb" />}
+                          <div className="img-editor">
+                            <div className="img-row">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={e => handleImageUpload(si, ii, e.target.files[0])}
+                              />
+                              {item.image && <img src={item.image} alt="" className="img-thumb" />}
+                            </div>
+                            {item.image && (
+                              <div className="img-controls">
+                                <div className="control-group">
+                                  <label>Size: {item.imageSize}px</label>
+                                  <input 
+                                    type="range" min="20" max="250" 
+                                    value={item.imageSize || 48} 
+                                    onChange={e => updateItem(si, ii, 'imageSize', +e.target.value)} 
+                                  />
+                                </div>
+                                <div className="control-group">
+                                  <label>Horizontal: {item.imageX}px</label>
+                                  <input 
+                                    type="range" min="-100" max="100" 
+                                    value={item.imageX || 0} 
+                                    onChange={e => updateItem(si, ii, 'imageX', +e.target.value)} 
+                                  />
+                                </div>
+                                <div className="control-group">
+                                  <label>Vertical: {item.imageY}px</label>
+                                  <input 
+                                    type="range" min="-100" max="100" 
+                                    value={item.imageY || 0} 
+                                    onChange={e => updateItem(si, ii, 'imageY', +e.target.value)} 
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

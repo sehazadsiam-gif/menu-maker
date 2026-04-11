@@ -255,11 +255,42 @@ html, body, #root {
 .move-btn:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
 .move-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-.img-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.img-row input { font-size: 10px !important; }
+.img-editor {
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--panel);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.img-row { display: flex; align-items: center; gap: 8px; }
+.img-row input { font-size: 10px !important; flex: 1; }
 .img-thumb {
   width: 32px; height: 32px; object-fit: cover;
   border-radius: 3px; border: 1px solid var(--border);
+}
+.img-controls {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.img-controls .control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.img-controls label {
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.img-controls input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  height: 12px;
 }
 .add-btn, .add-section-btn {
   width: 100%;

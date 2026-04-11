@@ -90,9 +90,13 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
                           alt=""
                           crossOrigin="anonymous"
                           style={{
-                            width: 48, height: 48, objectFit: 'cover',
-                            borderRadius: 4, flexShrink: 0,
+                            width: item.imageSize || 48,
+                            height: item.imageSize || 48,
+                            objectFit: 'cover',
+                            borderRadius: 4,
+                            flexShrink: 0,
                             border: `1px solid ${mutedColor || theme.muted}`,
+                            transform: `translate(${item.imageX || 0}px, ${item.imageY || 0}px)`,
                           }}
                         />
                       )}
