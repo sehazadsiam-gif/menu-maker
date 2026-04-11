@@ -5,7 +5,8 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
     title, subtitle, footer, sections, columns,
     showImages, titleFont: tFontOverride, bodyFont: bFontOverride,
     titleSize, itemNameSize, itemDescSize, priceSize,
-    width, height, padding
+    width, height, padding, autoHeight,
+    textColor, accentColor, mutedColor, bgColor
   } = settings;
 
   const titleFont = tFontOverride || theme.titleFont;
@@ -21,9 +22,10 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
       className="menu-canvas"
       style={{
         width: `${width}px`,
-        height: `${height}px`,
-        background: theme.bg,
-        color: theme.text,
+        height: autoHeight ? 'auto' : `${height}px`,
+        minHeight: autoHeight ? '100%' : '0',
+        background: bgColor || theme.bg,
+        color: textColor || theme.text,
         fontFamily: bodyFont,
         padding: `${padding}px`,
         border: theme.border,
@@ -36,7 +38,7 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
         <h1 style={{
           fontFamily: titleFont,
           fontSize: `${titleSize}px`,
-          color: theme.text,
+          color: textColor || theme.text,
           margin: 0,
           lineHeight: 1.05,
           letterSpacing: '0.5px',
@@ -45,7 +47,7 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
           <div style={{
             fontFamily: bodyFont,
             fontSize: `${Math.max(12, titleSize * 0.3)}px`,
-            color: theme.muted,
+            color: mutedColor || theme.muted,
             marginTop: 6,
             letterSpacing: '2px',
             textTransform: 'uppercase',
@@ -54,7 +56,7 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
         <div style={{
           width: '60%',
           margin: '14px auto 0',
-          borderTop: `2px ${theme.divider} ${theme.accent}`,
+          borderTop: `2px ${theme.divider} ${accentColor || theme.accent}`,
         }} />
       </header>
 
@@ -72,9 +74,9 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
                 <h2 style={{
                   fontFamily: titleFont,
                   fontSize: `${Math.max(16, titleSize * 0.42)}px`,
-                  color: theme.accent,
+                  color: accentColor || theme.accent,
                   margin: '0 0 10px 0',
-                  borderBottom: `1px ${theme.divider} ${theme.accent}`,
+                  borderBottom: `1px ${theme.divider} ${accentColor || theme.accent}`,
                   paddingBottom: 4,
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
@@ -90,7 +92,7 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
                           style={{
                             width: 48, height: 48, objectFit: 'cover',
                             borderRadius: 4, flexShrink: 0,
-                            border: `1px solid ${theme.muted}`,
+                            border: `1px solid ${mutedColor || theme.muted}`,
                           }}
                         />
                       )}
@@ -106,7 +108,7 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
                             fontFamily: bodyFont,
                             fontSize: `${itemNameSize}px`,
                             fontWeight: 700,
-                            color: theme.text,
+                            color: textColor || theme.text,
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px',
                             wordBreak: 'break-word',
@@ -116,7 +118,7 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
                               fontFamily: bodyFont,
                               fontSize: `${priceSize}px`,
                               fontWeight: 700,
-                              color: theme.accent,
+                              color: accentColor || theme.accent,
                               whiteSpace: 'nowrap',
                             }}>{item.price}</div>
                           )}
@@ -125,7 +127,7 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
                           <div style={{
                             fontFamily: bodyFont,
                             fontSize: `${itemDescSize}px`,
-                            color: theme.muted,
+                            color: mutedColor || theme.muted,
                             marginTop: 2,
                             lineHeight: 1.35,
                           }}>{item.description}</div>
@@ -145,10 +147,10 @@ export default function MenuPreview({ data, theme, settings, previewRef }) {
           textAlign: 'center',
           marginTop: 18,
           paddingTop: 10,
-          borderTop: `1px ${theme.divider} ${theme.accent}`,
+          borderTop: `1px ${theme.divider} ${accentColor || theme.accent}`,
           fontFamily: bodyFont,
           fontSize: 12,
-          color: theme.muted,
+          color: mutedColor || theme.muted,
           letterSpacing: '1.5px',
         }}>{footer}</footer>
       )}

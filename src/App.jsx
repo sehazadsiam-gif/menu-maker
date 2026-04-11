@@ -60,6 +60,13 @@ export default function App() {
   const [zoom, setZoom] = useState(0.6);
   const [activeTab, setActiveTab] = useState('content');
 
+  // New customization states
+  const [autoHeight, setAutoHeight] = useState(false);
+  const [textColor, setTextColor] = useState('');
+  const [accentColor, setAccentColor] = useState('');
+  const [mutedColor, setMutedColor] = useState('');
+  const [bgColor, setBgColor] = useState('');
+
   const previewRef = useRef(null);
 
   const theme = useMemo(() => THEMES.find(t => t.id === themeId), [themeId]);
@@ -67,7 +74,7 @@ export default function App() {
   const settings = {
     title, subtitle, footer, sections, columns, showImages,
     titleFont, bodyFont, titleSize, itemNameSize, itemDescSize, priceSize,
-    width, height, padding,
+    width, height, padding, autoHeight, textColor, accentColor, mutedColor, bgColor,
   };
 
   const handlePresetChange = (i) => {
@@ -79,6 +86,13 @@ export default function App() {
   // Section operations
   const addSection = () => setSections([...sections, { name: 'New Section', items: [{ name: 'New Item', description: '', price: '$0.00', image: '' }] }]);
   const deleteSection = (i) => setSections(sections.filter((_, idx) => idx !== i));
+  const moveSection = (i, direction) => {
+    const newSections = [...sections];
+    const targetIndex = i + direction;
+    if (targetIndex < 0 || targetIndex >= newSections.length) return;
+    [newSections[i], newSections[targetIndex]] = [newSections[targetIndex], newSections[i]];
+    setSections(newSections);
+  };
   const updateSection = (i, key, val) => {
     const copy = [...sections];
     copy[i] = { ...copy[i], [key]: val };
@@ -112,19 +126,22 @@ export default function App() {
   const download = async (format) => {
     if (!previewRef.current) return;
     try {
+      const actualHeight = autoHeight ? previewRef.current.offsetHeight : height;
+      const actualWidth = width;
+
       if (format === 'pdf') {
         const dataUrl = await toPng(previewRef.current, {
           quality: 0.98,
           pixelRatio: 2,
           cacheBust: true,
-          backgroundColor: theme.bg,
+          backgroundColor: bgColor || theme.bg,
         });
         const pdf = new jsPDF({
-          orientation: width > height ? 'landscape' : 'portrait',
+          orientation: actualWidth > actualHeight ? 'landscape' : 'portrait',
           unit: 'px',
-          format: [width, height],
+          format: [actualWidth, actualHeight],
         });
-        pdf.addImage(dataUrl, 'PNG', 0, 0, width, height);
+        pdf.addImage(dataUrl, 'PNG', 0, 0, actualWidth, actualHeight);
         pdf.save(`${title.replace(/\s+/g, '-').toLowerCase()}.pdf`);
         return;
       }
@@ -134,7 +151,7 @@ export default function App() {
         quality: 0.98,
         pixelRatio: 2,
         cacheBust: true,
-        backgroundColor: theme.bg,
+        backgroundColor: bgColor || theme.bg,
       });
       const link = document.createElement('a');
       link.download = `${title.replace(/\s+/g, '-').toLowerCase()}.${format === 'jpg' ? 'jpg' : 'png'}`;
@@ -195,7 +212,11 @@ export default function App() {
                         value={sec.name}
                         onChange={e => updateSection(si, 'name', e.target.value)}
                       />
-                      <button className="del" onClick={() => deleteSection(si)}>×</button>
+                      <div className="section-actions">
+                        <button className="move-btn" onClick={() => moveSection(si, -1)} disabled={si === 0}>↑</button>
+                        <button className="move-btn" onClick={() => moveSection(si, 1)} disabled={si === sections.length - 1}>↓</button>
+                        <button className="del" onClick={() => deleteSection(si)}>×</button>
+                      </div>
                     </div>
                     {sec.items.map((item, ii) => (
                       <div key={ii} className="item-block">
@@ -293,6 +314,32 @@ export default function App() {
                 <label>Price Size: {priceSize}px</label>
                 <input type="range" min="10" max="28" value={priceSize} onChange={e => setPriceSize(+e.target.value)} />
               </div>
+
+              <div className="field">
+                <label>Color Customization</label>
+                <div className="color-grid">
+                  <div className="color-item">
+                    <label>Main Text</label>
+                    <input type="color" value={textColor || theme.text} onChange={e => setTextColor(e.target.value)} />
+                    {textColor && <button className="clear-color" onClick={() => setTextColor('')}>×</button>}
+                  </div>
+                  <div className="color-item">
+                    <label>Accent</label>
+                    <input type="color" value={accentColor || theme.accent} onChange={e => setAccentColor(e.target.value)} />
+                    {accentColor && <button className="clear-color" onClick={() => setAccentColor('')}>×</button>}
+                  </div>
+                  <div className="color-item">
+                    <label>Muted</label>
+                    <input type="color" value={mutedColor || theme.muted} onChange={e => setMutedColor(e.target.value)} />
+                    {mutedColor && <button className="clear-color" onClick={() => setMutedColor('')}>×</button>}
+                  </div>
+                  <div className="color-item">
+                    <label>Background</label>
+                    <input type="color" value={bgColor || theme.bg} onChange={e => setBgColor(e.target.value)} />
+                    {bgColor && <button className="clear-color" onClick={() => setBgColor('')}>×</button>}
+                  </div>
+                </div>
+              </div>
             </>
           )}
 
@@ -312,8 +359,20 @@ export default function App() {
                 </div>
                 <div className="field">
                   <label>Height (px)</label>
-                  <input type="number" value={height} onChange={e => setHeight(+e.target.value)} />
+                  <input
+                    type="number"
+                    value={height}
+                    onChange={e => setHeight(+e.target.value)}
+                    disabled={autoHeight}
+                  />
                 </div>
+              </div>
+
+              <div className="field">
+                <label className="checkbox">
+                  <input type="checkbox" checked={autoHeight} onChange={e => setAutoHeight(e.target.checked)} />
+                  Auto Height (Flexible)
+                </label>
               </div>
 
               <div className="field">
@@ -349,7 +408,8 @@ export default function App() {
               transform: `scale(${zoom})`,
               transformOrigin: 'top center',
               width: `${width}px`,
-              height: `${height}px`,
+              height: autoHeight ? 'auto' : `${height}px`,
+              minHeight: autoHeight ? '600px' : '0',
             }}
           >
             <MenuPreview
